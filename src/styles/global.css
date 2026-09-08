@@ -324,6 +324,12 @@
   }
 }
 
+@keyframes avatar-float {
+  50% {
+    transform: translateY(-1.5rem);
+  }
+}
+
 @keyframes marquee-slide {
   to {
     transform: translateX(-50%);
@@ -378,6 +384,12 @@
 
 /* The marquee is time-based rather than scroll-linked: it should keep moving
    while the reader is still, which a scroll timeline cannot do. */
+@media (prefers-reduced-motion: no-preference) {
+  .avatar-float {
+    animation: avatar-float 8s var(--ease-in-out-quart) infinite;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .marquee-track {
     animation: marquee-slide 42s linear infinite;
