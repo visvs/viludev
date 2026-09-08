@@ -1,0 +1,33 @@
+---
+import { getAlternateLocale, switchLocalePath, useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const target = getAlternateLocale(locale);
+const href = switchLocalePath(Astro.url.pathname, target);
+
+const labels: Record<Locale, string> = { en: 'EN', es: 'ES' };
+---
+
+{
+  /*
+  Two anchors' worth of behaviour, so it stays plain HTML — no island. `hreflang`
+  and `lang` tell assistive technology the destination is in another language,
+  which a bare link would not.
+*/
+}
+<a
+  href={href}
+  hreflang={target}
+  lang={target}
+  aria-label={t('a11y.switchLanguage')}
+  class="text-text-muted hover:text-accent focus-visible:text-accent duration-fast rounded-md px-2 py-1 font-mono text-sm transition-colors"
+>
+  <span aria-hidden="true">{labels[locale]}</span>
+  <span class="sr-only">{labels[target]}</span>
+</a>

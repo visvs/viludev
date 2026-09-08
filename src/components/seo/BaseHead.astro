@@ -1,0 +1,56 @@
+---
+import { Font } from 'astro:assets';
+import { site } from '@/data/site';
+import { buildAlternateLinks, buildCanonicalUrl } from '@/lib/seo/buildMeta';
+import type { Locale } from '@/lib/i18n';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Locale-independent route, e.g. `/` or `/contact`. */
+  route: string;
+  noindex?: boolean | undefined;
+}
+
+const { title, description, locale, route, noindex = false } = Astro.props;
+
+const canonical = buildCanonicalUrl(site.url, route, locale);
+const alternates = buildAlternateLinks(site.url, route);
+const ogImage = new URL('/og-image.png', site.url).href;
+const ogLocale = locale === 'es' ? 'es_ES' : 'en_US';
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{
+  !noindex &&
+    alternates.map((alternate) => (
+      <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+    ))
+}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:image" content={ogImage} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<Font cssVariable="--font-family-body" preload />
+<Font cssVariable="--font-family-mono" />

@@ -1,29 +1,47 @@
 ---
-import { Font } from 'astro:assets';
-import '@/styles/global.css';
+import BaseHead from '@/components/seo/BaseHead.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import { site } from '@/data/site';
+import { buildPersonSchema } from '@/lib/seo/personSchema';
+import { useTranslations, type Locale } from '@/lib/i18n';
 
 interface Props {
-  title: string;
+  locale: Locale;
+  /** Locale-independent route, e.g. `/` or `/contact`. */
+  route: string;
+  title?: string | undefined;
   description?: string | undefined;
-  lang?: 'en' | 'es' | undefined;
   noindex?: boolean | undefined;
+  /** Emit Person structured data. Off for utility pages like the style guide. */
+  structuredData?: boolean | undefined;
 }
 
-const { title, description, lang = 'en', noindex = false } = Astro.props;
+const { locale, route, title, description, noindex = false, structuredData = true } = Astro.props;
+
+const t = useTranslations(locale);
+const pageTitle = title ?? t('meta.title');
+const pageDescription = description ?? t('meta.description');
+
+const personSchema = buildPersonSchema({
+  site,
+  description: pageDescription,
+  locale,
+  knowsAbout: ['React', 'React Native', 'TypeScript', 'Node.js', 'Next.js', 'Astro'],
+});
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={locale}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <BaseHead
+      title={pageTitle}
+      description={pageDescription}
+      locale={locale}
+      route={route}
+      noindex={noindex}
+    />
 
-    <Font cssVariable="--font-family-body" preload />
-    <Font cssVariable="--font-family-mono" />
+    {structuredData && <JsonLd schema={personSchema} />}
 
     {
       /*
@@ -45,12 +63,12 @@ const { title, description, lang = 'en', noindex = false } = Astro.props;
     </script>
   </head>
 
-  <body class="min-h-dvh">
+  <body class="bg-surface text-text min-h-dvh">
     <a
       href="#main"
-      class="bg-accent text-accent-contrast focus-visible:ring-focus sr-only rounded-md px-4 py-2 focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50"
+      class="bg-accent text-accent-contrast sr-only rounded-md px-4 py-2 font-medium focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50"
     >
-      Skip to content
+      {t('a11y.skipToContent')}
     </a>
 
     <slot name="header" />

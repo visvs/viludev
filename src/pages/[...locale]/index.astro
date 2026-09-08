@@ -1,0 +1,46 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import LanguageSwitcher from '@/features/navigation/LanguageSwitcher.astro';
+import { defaultLocale, locales, useTranslations, type Locale } from '@/lib/i18n';
+
+/**
+ * One route renders every locale. The alternative — a file per language —
+ * duplicates the page composition, so adding a section means remembering to
+ * edit both. This cannot drift.
+ */
+export const getStaticPaths = (() =>
+  locales.map((locale) => ({
+    params: { locale: locale === defaultLocale ? undefined : locale },
+    props: { locale },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout locale={locale} route="/">
+  <header slot="header" class="border-border border-b">
+    <Container size="wide">
+      <div class="flex h-16 items-center justify-between">
+        <span class="font-display font-bold tracking-tight">viludev</span>
+        <nav aria-label={t('a11y.mainNavigation')}>
+          <LanguageSwitcher locale={locale} />
+        </nav>
+      </div>
+    </Container>
+  </header>
+
+  <Container size="wide">
+    <Section id="hero">
+      <h1 id="hero-heading" class="text-4xl">{t('meta.title')}</h1>
+      <p class="text-text-muted mt-6 max-w-2xl text-lg">{t('meta.description')}</p>
+    </Section>
+  </Container>
+</BaseLayout>

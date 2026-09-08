@@ -1,0 +1,13 @@
+---
+interface Props {
+  schema: Record<string, unknown>;
+}
+
+const { schema } = Astro.props;
+---
+
+{
+  /* JSON-LD is data, not executable script; `set:html` is correct here and the
+    payload is built server-side from typed values, never from user input. */
+}
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
