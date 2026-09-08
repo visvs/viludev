@@ -9,7 +9,11 @@
 export const site = {
   name: 'Violeta Vera Salazar',
   handle: 'viludev',
-  url: 'https://viludev.com',
+  /**
+   * Resolved from the Astro `site` config, which is environment-driven, so the
+   * canonical origin always matches wherever the site is actually served.
+   */
+  url: import.meta.env.SITE,
   email: 'vi.vera.salazar@gmail.com',
   jobTitle: 'Frontend Developer',
   social: {

@@ -11,8 +11,23 @@ import tailwindcss from '@tailwindcss/vite';
  * nothing for a server to compute. The contact endpoint is the single route
  * that opts out, which is why an adapter is present at all.
  */
+/**
+ * Canonical origin, resolved per environment.
+ *
+ * This must never be a domain that is not actually serving the site: canonical
+ * and hreflang links tell search engines where the real version lives, so
+ * pointing them at an unregistered domain is worse than pointing them at the
+ * deployment URL. `SITE_URL` overrides once a custom domain exists; otherwise
+ * Vercel's own production hostname is used.
+ */
+const siteUrl =
+  process.env.SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'http://localhost:4321');
+
 export default defineConfig({
-  site: 'https://viludev.com',
+  site: siteUrl,
 
   adapter: vercel(),
 
