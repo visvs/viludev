@@ -40,16 +40,23 @@ export default defineConfig({
    * being handed to another party on every page view — the performance goal and
    * the privacy goal happen to have the same solution.
    *
-   * Two families. Display and body share Inter and differ by weight and
+   * Two families. Display and body share Poppins and differ by weight and
    * tracking, which is cheaper than a third download and keeps the page
    * typographically coherent.
+   *
+   * Poppins ships as discrete weights rather than a variable font, so the
+   * weights are listed individually — a range would quietly collapse to one
+   * face and every heading would render at the wrong weight.
    */
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Inter',
+      name: 'Poppins',
       cssVariable: '--font-family-body',
-      weights: ['400 800'],
+      weights: ['400', '600', '700'],
+      // Without this, Astro also downloads — and preloads — the italics, which
+      // this design never uses.
+      styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
     },
@@ -57,7 +64,8 @@ export default defineConfig({
       provider: fontProviders.fontsource(),
       name: 'JetBrains Mono',
       cssVariable: '--font-family-mono',
-      weights: ['400 600'],
+      weights: ['400'],
+      styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
     },

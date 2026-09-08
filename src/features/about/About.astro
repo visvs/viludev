@@ -13,7 +13,6 @@ const t = useTranslations(locale);
 const stats = [
   { value: '4+', labelKey: 'about.statYears' },
   { value: '3', labelKey: 'about.statCompanies' },
-  { value: '0 KB', labelKey: 'about.statJs' },
 ] as const;
 ---
 
@@ -25,7 +24,7 @@ const stats = [
         {t('about.heading')}
       </h2>
       <p
-        class="text-text mt-10 max-w-4xl text-2xl leading-snug font-medium text-balance sm:text-4xl"
+        class="text-text mt-10 max-w-4xl text-2xl leading-snug font-semibold text-balance sm:text-4xl"
       >
         {t('about.lead')}
       </p>
@@ -36,7 +35,7 @@ const stats = [
         <p class="text-text-muted text-lg leading-relaxed">{t('about.body')}</p>
         <p class="text-text-muted mt-6 text-lg leading-relaxed">{t('about.body2')}</p>
 
-        <dl class="border-border mt-12 grid grid-cols-3 gap-6 border-t pt-8">
+        <dl class="border-border mt-12 grid max-w-sm grid-cols-2 gap-8 border-t pt-8">
           {
             stats.map((stat) => (
               <div>
