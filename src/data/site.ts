@@ -16,6 +16,7 @@ export const site = {
   url: import.meta.env.SITE,
   email: 'vi.vera.salazar@gmail.com',
   jobTitle: 'Frontend Developer',
+  repository: 'https://github.com/visvs/viludev',
   social: {
     github: 'https://github.com/visvs',
     linkedin: 'https://www.linkedin.com/in/visv/',

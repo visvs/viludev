@@ -91,5 +91,6 @@ export const es: Record<TranslationKey, string> = {
   'validation.messageTooLong': 'Máximo 4000 caracteres.',
 
   'footer.builtWith': 'Construido con Astro, TypeScript y Tailwind CSS.',
+  'footer.viewSource': 'Ver código',
   'footer.backToTop': 'Volver arriba',
 };
