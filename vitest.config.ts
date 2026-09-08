@@ -34,7 +34,7 @@ export default getViteConfig({
         extends: true,
         test: {
           name: 'browser',
-          include: ['src/**/*.test.tsx', 'tests/browser/**/*.test.tsx'],
+          include: ['src/**/*.test.tsx', 'tests/browser/**/*.test.{ts,tsx}'],
           setupFiles: ['tests/setup.ts'],
           browser: {
             enabled: true,

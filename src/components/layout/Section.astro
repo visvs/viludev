@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cn } from '@/lib/cn';
+
+/**
+ * A landmark section with the shared vertical rhythm. `labelledBy` wires the
+ * region to its own heading so screen-reader users get a meaningful landmark
+ * list instead of a row of unnamed regions.
+ */
+type Props = HTMLAttributes<'section'> & {
+  id: string;
+  labelledBy?: string | undefined;
+};
+
+const { id, labelledBy, class: className, ...rest } = Astro.props;
+---
+
+<section
+  id={id}
+  aria-labelledby={labelledBy ?? `${id}-heading`}
+  class={cn('py-section relative', className)}
+  {...rest}
+>
+  <slot />
+</section>

@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cn } from '@/lib/cn';
+
+/**
+ * Horizontal measure and gutter. Owns no vertical spacing and no visual
+ * styling — that separation is what lets it be reused everywhere without
+ * fighting whatever it wraps.
+ */
+type Props = HTMLAttributes<'div'> & {
+  size?: 'prose' | 'default' | 'wide' | undefined;
+};
+
+const { size = 'default', class: className, ...rest } = Astro.props;
+
+const sizes = {
+  prose: 'max-w-2xl',
+  default: 'max-w-5xl',
+  wide: 'max-w-7xl',
+} as const;
+---
+
+<div class={cn('mx-auto w-full px-gutter', sizes[size], className)} {...rest}>
+  <slot />
+</div>

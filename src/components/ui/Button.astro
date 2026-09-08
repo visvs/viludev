@@ -1,0 +1,27 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cn } from '@/lib/cn';
+import { buttonVariants, type ButtonVariants } from './button.variants';
+
+/**
+ * Accepts the native button attributes so callers keep `disabled`, `aria-*`,
+ * `data-*` and the rest, plus `href` to render an anchor instead.
+ */
+type Props = ButtonVariants &
+  Omit<HTMLAttributes<'button'>, 'type'> & {
+    /** Renders an anchor instead of a button. */
+    href?: string | undefined;
+    type?: 'button' | 'submit' | 'reset' | undefined;
+  };
+
+const { href, type = 'button', intent, size, class: className, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class={cn(buttonVariants({ intent, size }), className)}
+  {...href ? { href } : { type }}
+  {...rest}
+>
+  <slot />
+</Tag>

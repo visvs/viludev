@@ -1,0 +1,222 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import Stack from '@/components/layout/Stack.astro';
+import Button from '@/components/ui/Button.astro';
+import Tag from '@/components/ui/Tag.astro';
+
+const neutrals = [
+  '50',
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '600',
+  '700',
+  '800',
+  '850',
+  '900',
+  '950',
+];
+const accents = {
+  violet: ['200', '300', '400', '500', '600', '700', '800'],
+  turquoise: ['200', '300', '400', '500', '600', '700'],
+  green: ['300', '400', '500', '600', '700'],
+  red: ['300', '400', '500', '600', '700'],
+};
+const semantics = [
+  'surface',
+  'surface-raised',
+  'surface-sunken',
+  'text',
+  'text-muted',
+  'text-subtle',
+  'border',
+  'border-strong',
+  'accent',
+  'accent-hover',
+  'accent-contrast',
+  'secondary',
+  'success',
+  'danger',
+  'focus',
+];
+const typeScale = [
+  ['display', 'text-display'],
+  ['4xl', 'text-4xl'],
+  ['3xl', 'text-3xl'],
+  ['2xl', 'text-2xl'],
+  ['xl', 'text-xl'],
+  ['lg', 'text-lg'],
+  ['base', 'text-base'],
+  ['sm', 'text-sm'],
+  ['xs', 'text-xs'],
+] as const;
+const radii = ['sm', 'md', 'lg', 'xl'] as const;
+const intents = ['primary', 'secondary', 'ghost'] as const;
+const sizes = ['sm', 'md', 'lg'] as const;
+---
+
+<BaseLayout
+  title="Style guide — viludev"
+  description="Design tokens and components for the viludev portfolio."
+  noindex
+>
+  <Container size="wide">
+    <Section id="tokens">
+      <Stack gap="lg">
+        <div>
+          <h1 id="tokens-heading" class="text-4xl">Style guide</h1>
+          <p class="text-text-muted mt-4 max-w-2xl">
+            Every token and component in the system. Colour contrast is verified automatically in <code
+              class="font-mono text-sm">tests/browser/design-tokens.test.ts</code
+            >, so this page is for judging the design rather than for auditing it.
+          </p>
+          <div class="mt-6">
+            <button
+              type="button"
+              id="theme-toggle"
+              class="border-border-strong text-text hover:border-accent hover:text-accent rounded-md border px-4 py-2"
+            >
+              Toggle theme
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Semantic tokens</h2>
+          <p class="text-text-muted mt-2 text-sm">The only colour tokens components may use.</p>
+          <ul class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {
+              semantics.map((name) => (
+                <li class="border-border rounded-lg border p-3">
+                  <div
+                    class="border-border h-14 w-full rounded-md border"
+                    style={`background: var(--color-${name})`}
+                  />
+                  <p class="mt-2 font-mono text-xs">{name}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Primitives</h2>
+          <p class="text-text-muted mt-2 text-sm">
+            Raw palette. Never referenced directly by a component.
+          </p>
+          <p class="mt-6 font-mono text-xs">ink</p>
+          <ul class="mt-2 flex flex-wrap gap-2">
+            {
+              neutrals.map((step) => (
+                <li class="text-center">
+                  <div
+                    class="border-border h-12 w-12 rounded-md border"
+                    style={`background: var(--color-ink-${step})`}
+                  />
+                  <span class="text-text-subtle font-mono text-xs">{step}</span>
+                </li>
+              ))
+            }
+          </ul>
+          {
+            Object.entries(accents).map(([hue, steps]) => (
+              <>
+                <p class="mt-6 font-mono text-xs">{hue}</p>
+                <ul class="mt-2 flex flex-wrap gap-2">
+                  {steps.map((step) => (
+                    <li class="text-center">
+                      <div
+                        class="border-border h-12 w-12 rounded-md border"
+                        style={`background: var(--color-${hue}-${step})`}
+                      />
+                      <span class="text-text-subtle font-mono text-xs">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ))
+          }
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Type scale</h2>
+          <p class="text-text-muted mt-2 text-sm">
+            Fluid: resize the window and every step interpolates. No type-related media queries
+            exist in the codebase.
+          </p>
+          <Stack gap="sm" class="mt-6">
+            {
+              typeScale.map(([name, cls]) => (
+                <div class="border-border flex items-baseline gap-4 border-b pb-2">
+                  <span class="text-text-subtle w-20 shrink-0 font-mono text-xs">{name}</span>
+                  <span class={`${cls} font-display truncate`}>Frontend Developer</span>
+                </div>
+              ))
+            }
+          </Stack>
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Buttons</h2>
+          <div class="mt-6 flex flex-wrap items-center gap-4">
+            {intents.map((intent) => <Button intent={intent}>{intent}</Button>)}
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-4">
+            {sizes.map((size) => <Button size={size}>size {size}</Button>)}
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-4">
+            <Button href="#tokens" intent="secondary">as a link</Button>
+            <Button disabled>disabled</Button>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Tags</h2>
+          <div class="mt-6 flex flex-wrap gap-2">
+            {['React', 'TypeScript', 'Astro', 'Node.js', 'Tailwind'].map((t) => <Tag>{t}</Tag>)}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-2xl">Radius and elevation</h2>
+          <ul class="mt-6 flex flex-wrap gap-4">
+            {
+              radii.map((r) => (
+                <li class="text-center">
+                  <div
+                    class="bg-surface-raised border-border h-20 w-20 border"
+                    style={`border-radius: var(--radius-${r}); box-shadow: var(--elevation)`}
+                  />
+                  <span class="text-text-subtle font-mono text-xs">{r}</span>
+                </li>
+              ))
+            }
+            <li class="text-center">
+              <div
+                class="bg-surface-raised border-border h-20 w-20 rounded-lg border"
+                style="box-shadow: var(--shadow-glow)"
+              >
+              </div>
+              <span class="text-text-subtle font-mono text-xs">glow</span>
+            </li>
+          </ul>
+        </div>
+      </Stack>
+    </Section>
+  </Container>
+
+  <script>
+    // Style-guide-only affordance. The real theme toggle ships as a feature in
+    // a later phase; this exists so the palette can be judged in both themes.
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const next = root.dataset['theme'] === 'light' ? 'dark' : 'light';
+      root.dataset['theme'] = next;
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</BaseLayout>

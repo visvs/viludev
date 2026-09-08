@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cn } from '@/lib/cn';
+
+/**
+ * Vertical rhythm between siblings. Exists so spacing is expressed once on the
+ * parent rather than as a margin repeated on every child.
+ */
+type Props = HTMLAttributes<'div'> & {
+  gap?: 'sm' | 'md' | 'lg' | undefined;
+};
+
+const { gap = 'md', class: className, ...rest } = Astro.props;
+
+const gaps = {
+  sm: 'gap-3',
+  md: 'gap-6',
+  lg: 'gap-12',
+} as const;
+---
+
+<div class={cn('flex flex-col', gaps[gap], className)} {...rest}>
+  <slot />
+</div>

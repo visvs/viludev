@@ -1,0 +1,64 @@
+---
+import { Font } from 'astro:assets';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string | undefined;
+  lang?: 'en' | 'es' | undefined;
+  noindex?: boolean | undefined;
+}
+
+const { title, description, lang = 'en', noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <Font cssVariable="--font-family-display" preload />
+    <Font cssVariable="--font-family-body" preload />
+
+    {
+      /*
+      Runs before first paint so the correct theme is applied without a flash of
+      the wrong one. It must stay inline and blocking: a deferred or bundled
+      script would paint first and correct itself afterwards, which is exactly
+      the flash being avoided. Dark is the default when nothing is stored.
+    */
+    }
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          document.documentElement.dataset.theme = stored === 'light' ? 'light' : 'dark';
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="min-h-dvh">
+    <a
+      href="#main"
+      class="bg-accent text-accent-contrast focus-visible:ring-focus sr-only rounded-md px-4 py-2 focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50"
+    >
+      Skip to content
+    </a>
+
+    <slot name="header" />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <slot name="footer" />
+  </body>
+</html>
