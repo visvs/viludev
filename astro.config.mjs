@@ -16,6 +16,33 @@ export default defineConfig({
 
   adapter: vercel(),
 
+  /**
+   * Astro computes the script and style hashes itself and emits the policy per
+   * page. Hand-maintaining a hash list is not viable here: the inline theme
+   * bootstrap and the island loader change on every build, so any hardcoded
+   * policy would be stale the moment it shipped — and a stale CSP is either
+   * broken or quietly permissive.
+   *
+   * The remaining directives are locked down because this site loads nothing
+   * from anywhere else: fonts are self-hosted, there is no analytics script and
+   * no third-party embed.
+   */
+  security: {
+    csp: {
+      algorithm: 'SHA-256',
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "form-action 'self'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+      ],
+    },
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'es'],

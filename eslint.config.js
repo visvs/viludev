@@ -118,9 +118,14 @@ export default defineConfig([
 
   ...boundaryRules,
 
-  // Config files are plain scripts; type-aware linting adds nothing there.
+  // Config and build scripts are plain Node, outside the typed app. Type-aware
+  // linting there reports every value as `any` without telling us anything.
   {
-    files: ['*.config.{js,mjs,ts}', 'tests/**/*.ts'],
+    files: ['*.config.{js,mjs,ts}', 'scripts/**/*.mjs', 'tests/**/*.ts'],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 ]);
