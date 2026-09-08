@@ -311,10 +311,16 @@
   }
 }
 
+/* Scale and lift only — deliberately no opacity change.
+ *
+ * Dimming a card also dims its text, and the composite drops below AA at any
+ * opacity low enough to read as "receded": 0.35 measured 1.81:1, and even 0.75
+ * only reached 4.16:1. The depth cue that actually carries this effect is the
+ * next card occluding this one, so the cards are opaque and the transform does
+ * the rest. */
 @keyframes card-recede {
   to {
-    opacity: 0.35;
-    transform: scale(0.93) translateY(-1rem);
+    transform: scale(0.94) translateY(-0.75rem);
   }
 }
 

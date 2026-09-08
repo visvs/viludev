@@ -31,3 +31,6 @@ test-results/
 
 # temporary audit tooling staged into public/ during accessibility checks
 public/__axe.js
+
+# adapter build output
+.vercel/

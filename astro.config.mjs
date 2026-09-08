@@ -1,17 +1,20 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
+import vercel from '@astrojs/vercel';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 /**
- * Site is fully static: content does not vary per request, so there is nothing
- * for a server to compute at request time. The contact endpoint added in a later
- * phase is the single on-demand route.
+ * Every page is prerendered: the content does not vary per request, so there is
+ * nothing for a server to compute. The contact endpoint is the single route
+ * that opts out, which is why an adapter is present at all.
  */
 export default defineConfig({
   site: 'https://viludev.com',
+
+  adapter: vercel(),
 
   i18n: {
     defaultLocale: 'en',

@@ -74,6 +74,8 @@ export default defineConfig([
   globalIgnores([
     'dist/**',
     '.astro/**',
+    // Adapter build output, not source.
+    '.vercel/**',
     'node_modules/**',
     'coverage/**',
     'playwright-report/**',
