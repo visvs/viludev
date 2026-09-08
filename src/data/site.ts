@@ -20,7 +20,6 @@ export const site = {
     github: 'https://github.com/visvs',
     linkedin: 'https://www.linkedin.com/in/visv/',
   },
-  repository: 'https://github.com/visvs/viludev',
 } as const;
 
 export type Site = typeof site;

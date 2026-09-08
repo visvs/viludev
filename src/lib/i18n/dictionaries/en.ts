@@ -89,7 +89,6 @@ export const en = {
   'validation.messageTooLong': 'Please keep this under 4000 characters.',
 
   'footer.builtWith': 'Built with Astro, TypeScript and Tailwind CSS.',
-  'footer.viewSource': 'View source',
   'footer.backToTop': 'Back to top',
 } as const;
 
