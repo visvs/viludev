@@ -1,0 +1,68 @@
+---
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import { site } from '@/data/site';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+{
+  /*
+  Section shell. The form island lands in a later phase; email and profiles are
+  here now so the navigation anchor is never a dead link.
+*/
+}
+<Section id="contact" class="bg-surface-sunken">
+  <Container size="wide">
+    <h2 id="contact-heading" class="text-3xl">{t('contact.heading')}</h2>
+    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('contact.lead')}</p>
+
+    <dl class="mt-10 grid gap-6 sm:grid-cols-3">
+      <div>
+        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+          {t('contact.emailLabel')}
+        </dt>
+        <dd class="mt-2">
+          <a
+            href={`mailto:${site.email}`}
+            class="text-accent hover:text-accent-hover duration-fast rounded-md break-all transition-colors"
+          >
+            {site.email}
+          </a>
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">GitHub</dt>
+        <dd class="mt-2">
+          <a
+            href={site.social.github}
+            rel="me noopener"
+            class="text-accent hover:text-accent-hover duration-fast rounded-md transition-colors"
+          >
+            github.com/visvs
+          </a>
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">LinkedIn</dt>
+        <dd class="mt-2">
+          <a
+            href={site.social.linkedin}
+            rel="me noopener"
+            class="text-accent hover:text-accent-hover duration-fast rounded-md transition-colors"
+          >
+            linkedin.com/in/visv
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </Container>
+</Section>

@@ -112,10 +112,31 @@ describe('dictionary parity', () => {
     expect(Object.keys(es).sort()).toEqual(Object.keys(en).sort());
   });
 
+  /**
+   * Catches copy that was added in English and never translated. A handful of
+   * strings are legitimately identical — proper nouns and numbers — so they are
+   * listed explicitly. Anything not on this list that matches across locales is
+   * almost certainly an oversight.
+   */
   it('has no untranslated strings left identical by accident', () => {
+    const intentionallyIdentical = new Set<string>([
+      'hero.ctaGithub', // a brand name
+      'about.institution', // the institution's own name
+      'about.educationYears', // a year range
+    ]);
+
     const identical = Object.keys(en).filter(
-      (key) => en[key as keyof typeof en] === es[key as keyof typeof en],
+      (key) =>
+        !intentionallyIdentical.has(key) &&
+        en[key as keyof typeof en] === es[key as keyof typeof en],
     );
     expect(identical).toEqual([]);
+  });
+
+  it('does not keep stale entries in the identical-by-design allowlist', () => {
+    const allowlisted = ['hero.ctaGithub', 'about.institution', 'about.educationYears'] as const;
+    for (const key of allowlisted) {
+      expect(en[key], `${key} is allowlisted but no longer identical`).toBe(es[key]);
+    }
   });
 });

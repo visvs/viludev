@@ -1,0 +1,36 @@
+---
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<Section id="about">
+  <Container size="wide">
+    <h2 id="about-heading" class="text-3xl">{t('about.heading')}</h2>
+
+    <div class="mt-10 grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div>
+        <p class="text-text text-xl leading-relaxed text-pretty">{t('about.lead')}</p>
+        <p class="text-text-muted mt-6 leading-relaxed">{t('about.body')}</p>
+        <p class="text-text-muted mt-4 leading-relaxed">{t('about.body2')}</p>
+      </div>
+
+      <div class="border-border bg-surface-raised rounded-lg border p-6">
+        <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+          {t('about.educationHeading')}
+        </h3>
+        <p class="text-text mt-4 font-medium">{t('about.degree')}</p>
+        <p class="text-text-muted mt-1 text-sm">{t('about.institution')}</p>
+        <p class="text-text-subtle mt-1 font-mono text-sm">{t('about.educationYears')}</p>
+        <p class="text-text-muted mt-4 text-sm leading-relaxed">{t('about.educationNote')}</p>
+      </div>
+    </div>
+  </Container>
+</Section>

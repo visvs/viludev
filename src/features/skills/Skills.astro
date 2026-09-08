@@ -1,0 +1,56 @@
+---
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import Tag from '@/components/ui/Tag.astro';
+import { skillGroups, spokenLanguages } from '@/data/skills';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<Section id="skills" class="bg-surface-sunken">
+  <Container size="wide">
+    <h2 id="skills-heading" class="text-3xl">{t('skills.heading')}</h2>
+    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('skills.lead')}</p>
+
+    <div class="mt-12 grid gap-8 sm:grid-cols-2">
+      {
+        skillGroups.map((group) => (
+          <div>
+            <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+              {t(group.labelKey)}
+            </h3>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {group.skills.map((skill) => (
+                <li>
+                  <Tag>{skill}</Tag>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="border-border mt-12 border-t pt-8">
+      <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+        {t('skills.languagesHeading')}
+      </h3>
+      <ul class="mt-4 flex flex-wrap gap-x-8 gap-y-2">
+        {
+          spokenLanguages.map((language) => (
+            <li class="flex items-baseline gap-2">
+              <span class="text-text font-medium">{t(language.nameKey)}</span>
+              <span class="text-text-subtle text-sm">{t(language.levelKey)}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</Section>

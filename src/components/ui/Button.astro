@@ -8,7 +8,7 @@ import { buttonVariants, type ButtonVariants } from './button.variants';
  * `data-*` and the rest, plus `href` to render an anchor instead.
  */
 type Props = ButtonVariants &
-  Omit<HTMLAttributes<'button'>, 'type'> & {
+  Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'type' | 'href'> & {
     /** Renders an anchor instead of a button. */
     href?: string | undefined;
     type?: 'button' | 'submit' | 'reset' | undefined;

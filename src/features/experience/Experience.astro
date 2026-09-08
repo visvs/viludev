@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import Container from '@/components/layout/Container.astro';
+import Section from '@/components/layout/Section.astro';
+import TimelineItem from './components/TimelineItem.astro';
+import { sortByRecency } from './lib/formatDateRange';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Entry ids are `<locale>/<slug>`, which is how one collection serves both
+// languages without a locale field duplicated in every file's frontmatter.
+const entries = await getCollection('experience', ({ id }) => id.startsWith(`${locale}/`));
+const timeline = sortByRecency(entries.map((entry) => entry.data));
+---
+
+<Section id="experience">
+  <Container size="wide">
+    <h2 id="experience-heading" class="text-3xl">{t('experience.heading')}</h2>
+    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('experience.lead')}</p>
+
+    <ol class="mt-12">
+      {
+        timeline.map((entry) => (
+          <TimelineItem
+            role={entry.role}
+            company={entry.company}
+            startDate={entry.startDate}
+            endDate={entry.endDate}
+            highlights={entry.highlights}
+            locale={locale}
+            presentLabel={t('experience.present')}
+            isCurrent={entry.endDate === null}
+          />
+        ))
+      }
+    </ol>
+  </Container>
+</Section>

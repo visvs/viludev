@@ -1,0 +1,111 @@
+---
+import Container from '@/components/layout/Container.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { navItems } from '@/data/navigation';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<header class="border-border bg-surface/80 sticky top-0 z-40 border-b backdrop-blur-md">
+  <Container size="wide">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a
+        href={locale === 'en' ? '/' : `/${locale}/`}
+        class="font-display hover:text-accent duration-fast rounded-md text-lg font-bold tracking-tight transition-colors"
+      >
+        viludev
+      </a>
+
+      <nav aria-label={t('a11y.mainNavigation')} class="flex items-center gap-1">
+        <ul class="hidden items-center gap-1 md:flex">
+          {
+            navItems.map((item) => (
+              <li>
+                <a
+                  href={`#${item.id}`}
+                  class="text-text-muted hover:text-accent duration-fast rounded-md px-3 py-2 text-sm transition-colors"
+                >
+                  {t(item.labelKey)}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="border-border ml-1 flex items-center gap-1 border-l pl-2">
+          <LanguageSwitcher locale={locale} />
+          <ThemeToggle locale={locale} />
+
+          {
+            /*
+            The Popover API gives the open/close behaviour, light-dismiss, focus
+            handling and Escape for free. A React island here would reimplement
+            what the platform already does correctly.
+          */
+          }
+          <button
+            type="button"
+            popovertarget="mobile-menu"
+            aria-label={t('a11y.openMenu')}
+            class="text-text-muted hover:text-accent border-border duration-fast flex size-9 items-center justify-center rounded-md border transition-colors md:hidden"
+          >
+            <svg
+              class="size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </Container>
+</header>
+
+<div
+  id="mobile-menu"
+  popover
+  class="bg-surface-raised border-border text-text m-0 mt-16 w-full max-w-none rounded-none border-b p-0 backdrop:bg-black/50 md:hidden"
+>
+  <ul class="flex flex-col p-2">
+    {
+      navItems.map((item) => (
+        <li>
+          <a
+            href={`#${item.id}`}
+            data-mobile-nav-link
+            class="text-text hover:bg-surface-sunken hover:text-accent duration-fast block rounded-md px-4 py-3 text-base transition-colors"
+          >
+            {t(item.labelKey)}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  // The platform handles opening, light-dismiss and Escape. The one thing it
+  // does not know is that following an in-page anchor should also close the menu.
+  const menu = document.getElementById('mobile-menu');
+
+  if (menu instanceof HTMLElement) {
+    for (const link of menu.querySelectorAll<HTMLAnchorElement>('[data-mobile-nav-link]')) {
+      link.addEventListener('click', () => {
+        menu.hidePopover();
+      });
+    }
+  }
+</script>

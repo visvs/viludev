@@ -1,0 +1,47 @@
+---
+import Container from '@/components/layout/Container.astro';
+import { site } from '@/data/site';
+import { useTranslations, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = String(new Date().getFullYear());
+---
+
+<footer class="border-border border-t">
+  <Container size="wide">
+    <div class="flex flex-col gap-4 py-10 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-text-muted text-sm">
+          {
+            /* Astro 7 defaults `compressHTML` to 'jsx', which strips whitespace
+              between adjacent expressions. Building one string keeps the spacing
+              out of the reach of a compiler setting. */
+          }
+          {`\u00A9 ${year} ${site.name}`}
+        </p>
+        <p class="text-text-subtle mt-1 text-sm">{t('footer.builtWith')}</p>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a
+          href={site.repository}
+          rel="noopener"
+          class="text-text-muted hover:text-accent duration-fast rounded-md text-sm transition-colors"
+        >
+          {t('footer.viewSource')}
+        </a>
+        <a
+          href="#hero"
+          class="text-text-muted hover:text-accent duration-fast rounded-md text-sm transition-colors"
+        >
+          {t('footer.backToTop')}
+        </a>
+      </div>
+    </div>
+  </Container>
+</footer>
