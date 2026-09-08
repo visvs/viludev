@@ -1,0 +1,14 @@
+# pnpm 10+ reads settings from here rather than the package.json "pnpm" field.
+
+# esbuild's postinstall only verifies the platform binary, which pnpm already
+# installs via the @esbuild/<platform> optional dependency. Approved so installs
+# are clean and reproducible in CI.
+allowBuilds:
+  esbuild: true
+
+peerDependencyRules:
+  allowedVersions:
+    # eslint-plugin-jsx-a11y's peer range stops at eslint 9, but
+    # eslint-plugin-astro@3 requires both eslint>=10 and this plugin, so the
+    # metadata is simply stale. Verified working against eslint 10.
+    eslint-plugin-jsx-a11y>eslint: '10'

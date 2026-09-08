@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+ * Dark mode is driven by `data-theme` on <html> so the user's explicit choice
+ * can override the OS preference. The inline script in BaseLayout sets it
+ * before first paint.
+ * ------------------------------------------------------------------------- */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ---------------------------------------------------------------------------
+ * Design tokens. Two layers, on purpose:
+ *   1. Primitives  — the raw palette. Never referenced by components.
+ *   2. Semantics   — roles. These are the only colors components may use, and
+ *                    the only thing dark mode redefines.
+ * Populated in Phase 1.
+ * ------------------------------------------------------------------------- */
+@theme {
+  /* placeholder — replaced by the real token set in Phase 1 */
+}
