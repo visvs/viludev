@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { parse, wcagContrast } from 'culori';
+import { converter, parse, wcagContrast } from 'culori';
+
+const toRgb = converter('rgb');
 import '../../src/styles/global.css';
 
 type Theme = 'dark' | 'light';
@@ -10,6 +12,16 @@ type Theme = 'dark' | 'light';
  * chain and the OKLCH maths is far more trustworthy than re-implementing either
  * in the test.
  */
+/** Resolve a token without needing a theme, for values that do not vary. */
+function resolveTokenValue(token: string): string {
+  const probe = document.createElement('div');
+  probe.style.color = `var(${token})`;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
 function resolveToken(token: string, theme: Theme): string {
   document.documentElement.setAttribute('data-theme', theme);
   const probe = document.createElement('div');
@@ -43,6 +55,7 @@ const textPairs: ReadonlyArray<readonly [string, string]> = [
   ['--color-text-muted', '--color-surface'],
   ['--color-text-subtle', '--color-surface'],
   ['--color-accent', '--color-surface'],
+  ['--color-accent', '--color-surface-raised'],
   ['--color-accent-contrast', '--color-accent'],
   ['--color-secondary', '--color-surface'],
   ['--color-success', '--color-surface'],
@@ -52,6 +65,8 @@ const textPairs: ReadonlyArray<readonly [string, string]> = [
 const nonTextPairs: ReadonlyArray<readonly [string, string]> = [
   ['--color-focus', '--color-surface'],
   ['--color-border-strong', '--color-surface'],
+  // The brand purple carries no text, so 3:1 as a non-text indicator is the bar.
+  ['--color-accent-strong', '--color-surface'],
 ];
 
 describe('the contrast maths itself', () => {
@@ -88,9 +103,9 @@ describe.each<Theme>(['dark', 'light'])('%s theme contrast', (theme) => {
 describe('primitive palette availability', () => {
   const palette: Readonly<Record<string, readonly string[]>> = {
     ink: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '850', '900', '950'],
-    violet: ['200', '300', '400', '500', '600', '700', '800'],
-    turquoise: ['200', '300', '400', '500', '600', '700'],
-    green: ['300', '400', '500', '600', '700'],
+    violet: ['50', '100', '200', '300', '400', '500', '600', '700', '800'],
+    cyan: ['50', '100', '200', '300', '400', '500', '600', '700', '800'],
+    emerald: ['50', '100', '200', '300', '400', '500', '600', '700', '800'],
     red: ['300', '400', '500', '600', '700'],
   };
 
@@ -101,5 +116,32 @@ describe('primitive palette availability', () => {
   it.each(tokens)('%s is emitted as a CSS custom property', (token) => {
     const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
     expect(value).not.toBe('');
+  });
+});
+
+/**
+ * The palette was specified as exact hex values. OKLCH is used for the ramps
+ * because it makes them perceptually even, but the three brand anchors must
+ * still land precisely on the specified colours.
+ */
+describe('brand anchors', () => {
+  const anchors: ReadonlyArray<readonly [string, readonly [number, number, number]]> = [
+    ['--color-violet-500', [139, 92, 246]],
+    ['--color-cyan-500', [6, 182, 212]],
+    ['--color-emerald-500', [16, 185, 129]],
+    ['--color-ink-950', [11, 15, 25]],
+  ];
+
+  it.each(anchors)('%s round-trips to the specified sRGB value', (token, expected) => {
+    const actual = toColor(resolveTokenValue(token));
+    const rgb = toRgb(actual);
+    if (!rgb) throw new Error(`Could not convert ${token} to sRGB`);
+    const channels = [rgb.r * 255, rgb.g * 255, rgb.b * 255] as const;
+    // A channel of tolerance: OKLCH values are authored to five decimal places,
+    // so the round-trip through sRGB is exact to well under one 8-bit step.
+    const [expectedR, expectedG, expectedB] = expected;
+    expect(Math.abs(channels[0] - expectedR)).toBeLessThan(1);
+    expect(Math.abs(channels[1] - expectedG)).toBeLessThan(1);
+    expect(Math.abs(channels[2] - expectedB)).toBeLessThan(1);
   });
 });

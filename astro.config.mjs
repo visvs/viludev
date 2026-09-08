@@ -40,25 +40,26 @@ export default defineConfig({
    * being handed to another party on every page view — the performance goal and
    * the privacy goal happen to have the same solution.
    *
-   * Two families only. The monospace role uses the system stack, which costs
-   * nothing to download.
+   * Two families. Display and body share Inter and differ by weight and
+   * tracking, which is cheaper than a third download and keeps the page
+   * typographically coherent.
    */
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Bricolage Grotesque',
-      cssVariable: '--font-family-display',
+      name: 'Inter',
+      cssVariable: '--font-family-body',
       weights: ['400 800'],
       subsets: ['latin'],
       fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
     },
     {
       provider: fontProviders.fontsource(),
-      name: 'Inter',
-      cssVariable: '--font-family-body',
-      weights: ['400 700'],
+      name: 'JetBrains Mono',
+      cssVariable: '--font-family-mono',
+      weights: ['400 600'],
       subsets: ['latin'],
-      fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
+      fallbacks: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
     },
   ],
 

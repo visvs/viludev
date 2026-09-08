@@ -22,8 +22,8 @@ const { title, description, lang = 'en', noindex = false } = Astro.props;
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <Font cssVariable="--font-family-display" preload />
     <Font cssVariable="--font-family-body" preload />
+    <Font cssVariable="--font-family-mono" />
 
     {
       /*
