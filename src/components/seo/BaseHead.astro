@@ -18,7 +18,7 @@ const { title, description, locale, route, noindex = false } = Astro.props;
 
 const canonical = buildCanonicalUrl(site.url, route, locale);
 const alternates = buildAlternateLinks(site.url, route);
-const ogImage = new URL('/og-image.png', site.url).href;
+const ogImage = new URL('/og-image.jpg', site.url).href;
 const ogLocale = locale === 'es' ? 'es_ES' : 'en_US';
 ---
 
@@ -44,6 +44,10 @@ const ogLocale = locale === 'es' ? 'es_ES' : 'en_US';
 <meta property="og:url" content={canonical} />
 <meta property="og:locale" content={ogLocale} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${site.name} — ${site.jobTitle}`} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />

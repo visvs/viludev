@@ -13,7 +13,9 @@ import { join } from 'node:path';
 import { chromium } from 'playwright';
 
 const FONT_DIR = '.vercel/output/static/_astro/fonts';
-const OUTPUT = 'public/og-image.png';
+// JPEG, not PNG: the card is mostly soft gradients, which PNG stores badly
+// (144 KB) and JPEG stores well (~40 KB) with no visible difference.
+const OUTPUT = 'public/og-image.jpg';
 const WIDTH = 1200;
 const HEIGHT = 630;
 
@@ -126,7 +128,7 @@ const page = await browser.newPage({
 });
 await page.setContent(html(fonts), { waitUntil: 'load' });
 await page.evaluate(() => document.fonts.ready);
-const buffer = await page.screenshot({ type: 'png' });
+const buffer = await page.screenshot({ type: 'jpeg', quality: 88 });
 await browser.close();
 await writeFile(OUTPUT, buffer);
 console.log(`Wrote ${OUTPUT} (${WIDTH}x${HEIGHT}, ${buffer.length} B)`);
