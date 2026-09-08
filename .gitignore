@@ -28,3 +28,6 @@ coverage/
 playwright-report/
 test-results/
 .vitest/
+
+# temporary audit tooling staged into public/ during accessibility checks
+public/__axe.js

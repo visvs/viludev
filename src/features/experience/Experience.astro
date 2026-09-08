@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Container from '@/components/layout/Container.astro';
 import Section from '@/components/layout/Section.astro';
-import TimelineItem from './components/TimelineItem.astro';
+import ExperienceCard from './components/ExperienceCard.astro';
 import { sortByRecency } from './lib/formatDateRange';
 import { useTranslations, type Locale } from '@/lib/i18n';
 
@@ -21,13 +21,25 @@ const timeline = sortByRecency(entries.map((entry) => entry.data));
 
 <Section id="experience">
   <Container size="wide">
-    <h2 id="experience-heading" class="text-3xl">{t('experience.heading')}</h2>
-    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('experience.lead')}</p>
+    <div class="reveal">
+      <h2 id="experience-heading" class="text-4xl tracking-tighter sm:text-5xl">
+        {t('experience.heading')}
+      </h2>
+      <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('experience.lead')}</p>
+    </div>
 
-    <ol class="mt-12">
+    {
+      /*
+      The gap is scroll choreography, not decoration: each card needs roughly
+      half a viewport of travel before the next slides over it, or the deck
+      assembles too fast to read. Viewport units are the honest unit here, so
+      the pacing holds on a laptop and on a tall monitor alike.
+    */
+    }
+    <ol class="mt-16 space-y-[42vh] pb-[28vh]">
       {
-        timeline.map((entry) => (
-          <TimelineItem
+        timeline.map((entry, index) => (
+          <ExperienceCard
             role={entry.role}
             company={entry.company}
             startDate={entry.startDate}
@@ -35,7 +47,9 @@ const timeline = sortByRecency(entries.map((entry) => entry.data));
             highlights={entry.highlights}
             locale={locale}
             presentLabel={t('experience.present')}
+            currentLabel={t('experience.current')}
             isCurrent={entry.endDate === null}
+            index={index}
           />
         ))
       }

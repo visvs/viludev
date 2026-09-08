@@ -64,6 +64,20 @@ const personSchema = buildPersonSchema({
   </head>
 
   <body class="bg-surface text-text min-h-dvh">
+    {
+      /*
+      Reading progress. Deliberately a thin bar at the top rather than a
+      side rail: it reports position without competing with the content, and it
+      is decorative, so it is hidden from assistive technology.
+    */
+    }
+    <div class="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5" aria-hidden="true">
+      <div
+        class="scroll-progress from-accent via-secondary to-success h-full w-full bg-gradient-to-r"
+      >
+      </div>
+    </div>
+
     <a
       href="#main"
       class="bg-accent text-accent-contrast sr-only rounded-md px-4 py-2 font-medium focus-visible:not-sr-only focus-visible:absolute focus-visible:top-4 focus-visible:left-4 focus-visible:z-50"

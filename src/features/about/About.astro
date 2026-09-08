@@ -9,27 +9,65 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+
+const stats = [
+  { value: '4+', labelKey: 'about.statYears' },
+  { value: '3', labelKey: 'about.statCompanies' },
+  { value: '0 KB', labelKey: 'about.statJs' },
+] as const;
 ---
 
-<Section id="about">
+<Section id="about" class="relative overflow-hidden">
   <Container size="wide">
-    <h2 id="about-heading" class="text-3xl">{t('about.heading')}</h2>
+    {/* A pull quote does the work a heading cannot: it states a point of view. */}
+    <div class="reveal">
+      <h2 id="about-heading" class="text-4xl tracking-tighter sm:text-5xl">
+        {t('about.heading')}
+      </h2>
+      <p
+        class="text-text mt-10 max-w-4xl text-2xl leading-snug font-medium text-balance sm:text-4xl"
+      >
+        {t('about.lead')}
+      </p>
+    </div>
 
-    <div class="mt-10 grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      <div>
-        <p class="text-text text-xl leading-relaxed text-pretty">{t('about.lead')}</p>
-        <p class="text-text-muted mt-6 leading-relaxed">{t('about.body')}</p>
-        <p class="text-text-muted mt-4 leading-relaxed">{t('about.body2')}</p>
+    <div class="mt-16 grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
+      <div class="reveal">
+        <p class="text-text-muted text-lg leading-relaxed">{t('about.body')}</p>
+        <p class="text-text-muted mt-6 text-lg leading-relaxed">{t('about.body2')}</p>
+
+        <dl class="border-border mt-12 grid grid-cols-3 gap-6 border-t pt-8">
+          {
+            stats.map((stat) => (
+              <div>
+                <dt class="text-text-subtle font-mono text-xs tracking-[0.15em] uppercase">
+                  {t(stat.labelKey)}
+                </dt>
+                <dd class="text-accent mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                  {stat.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
       </div>
 
-      <div class="border-border bg-surface-raised rounded-lg border p-6">
-        <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
-          {t('about.educationHeading')}
-        </h3>
-        <p class="text-text mt-4 font-medium">{t('about.degree')}</p>
-        <p class="text-text-muted mt-1 text-sm">{t('about.institution')}</p>
-        <p class="text-text-subtle mt-1 font-mono text-sm">{t('about.educationYears')}</p>
-        <p class="text-text-muted mt-4 text-sm leading-relaxed">{t('about.educationNote')}</p>
+      <div class="reveal">
+        <div
+          class="border-border bg-surface-raised/70 relative overflow-hidden rounded-xl border p-8 backdrop-blur-xl"
+        >
+          <div class="bloom bg-accent-strong -top-20 -right-16 size-52" aria-hidden="true"></div>
+
+          <div class="relative">
+            <h3 class="text-text-subtle font-mono text-sm tracking-[0.15em] uppercase">
+              {t('about.educationHeading')}
+            </h3>
+            <p class="text-text mt-5 text-lg font-semibold">{t('about.degree')}</p>
+            <p class="text-text-muted mt-2">{t('about.institution')}</p>
+            <p class="text-secondary mt-1 font-mono text-sm">{t('about.educationYears')}</p>
+            <p class="text-text-muted mt-6 leading-relaxed">{t('about.educationNote')}</p>
+          </div>
+        </div>
       </div>
     </div>
   </Container>

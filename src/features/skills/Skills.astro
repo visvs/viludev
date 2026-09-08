@@ -11,18 +11,48 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+
+/** Flattened for the marquee. Duplicated once so the loop is seamless. */
+const marqueeSkills = skillGroups.flatMap((group) => group.skills);
 ---
 
-<Section id="skills" class="bg-surface-sunken">
-  <Container size="wide">
-    <h2 id="skills-heading" class="text-3xl">{t('skills.heading')}</h2>
-    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('skills.lead')}</p>
+<Section id="skills" class="bg-surface-sunken relative overflow-hidden">
+  <div class="bloom bg-secondary top-1/2 -left-40 size-[26rem]" aria-hidden="true"></div>
 
-    <div class="mt-12 grid gap-8 sm:grid-cols-2">
+  <Container size="wide" class="relative">
+    <div class="reveal">
+      <h2 id="skills-heading" class="text-4xl tracking-tighter sm:text-5xl">
+        {t('skills.heading')}
+      </h2>
+      <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('skills.lead')}</p>
+    </div>
+  </Container>
+
+  {
+    /*
+    A continuous band of the whole stack, mirroring how the reference palette
+    reads. It pauses on hover and on focus, and stops entirely under
+    reduced-motion, where it degrades to a plain scrollable row.
+  */
+  }
+  <div
+    class="marquee relative mt-16 flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
+    aria-hidden="true"
+  >
+    <div class="marquee-track flex shrink-0 gap-3 pr-3">
+      {marqueeSkills.map((skill) => <Tag class="whitespace-nowrap">{skill}</Tag>)}
+    </div>
+    <div class="marquee-track flex shrink-0 gap-3 pr-3">
+      {marqueeSkills.map((skill) => <Tag class="whitespace-nowrap">{skill}</Tag>)}
+    </div>
+  </div>
+
+  <Container size="wide" class="relative">
+    <div class="mt-16 grid gap-x-8 gap-y-10 sm:grid-cols-2">
       {
         skillGroups.map((group) => (
-          <div>
-            <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+          <div class="reveal border-border border-t pt-6">
+            <h3 class="text-text-subtle font-mono text-sm tracking-[0.15em] uppercase">
               {t(group.labelKey)}
             </h3>
             <ul class="mt-4 flex flex-wrap gap-2">
@@ -37,16 +67,16 @@ const t = useTranslations(locale);
       }
     </div>
 
-    <div class="border-border mt-12 border-t pt-8">
-      <h3 class="text-text-subtle font-mono text-sm tracking-wide uppercase">
+    <div class="reveal border-border mt-14 border-t pt-8">
+      <h3 class="text-text-subtle font-mono text-sm tracking-[0.15em] uppercase">
         {t('skills.languagesHeading')}
       </h3>
-      <ul class="mt-4 flex flex-wrap gap-x-8 gap-y-2">
+      <ul class="mt-4 flex flex-wrap gap-x-10 gap-y-2">
         {
           spokenLanguages.map((language) => (
             <li class="flex items-baseline gap-2">
-              <span class="text-text font-medium">{t(language.nameKey)}</span>
-              <span class="text-text-subtle text-sm">{t(language.levelKey)}</span>
+              <span class="text-text text-lg font-medium">{t(language.nameKey)}</span>
+              <span class="text-text-subtle font-mono text-sm">{t(language.levelKey)}</span>
             </li>
           ))
         }

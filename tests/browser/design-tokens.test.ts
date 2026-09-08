@@ -145,3 +145,80 @@ describe('brand anchors', () => {
     expect(Math.abs(channels[2] - expectedB)).toBeLessThan(1);
   });
 });
+
+/**
+ * Decorative blooms composite over the surface and lighten it, which reduces
+ * contrast for the light text sitting on top. axe cannot catch this — it
+ * reports overlapping decorative layers as "incomplete" rather than as a
+ * failure — so the guarantee has to be asserted here.
+ *
+ * The ceiling in `global.css` is 0.22. If someone raises it, this fails.
+ */
+describe('decorative bloom opacity ceiling', () => {
+  /**
+   * The ceiling differs per theme because a bloom lightens a dark surface and
+   * darkens a light one, and those two directions do not have the same
+   * headroom. These must match the `--bloom-opacity` values in global.css.
+   */
+  const ceilingByTheme: Record<Theme, number> = { dark: 0.22, light: 0.13 };
+
+  function composite(base: string, overlay: string, alpha: number) {
+    const b = toRgb(toColor(base));
+    const o = toRgb(toColor(overlay));
+    if (!b || !o) throw new Error('Could not convert bloom colours to sRGB');
+    return {
+      mode: 'rgb' as const,
+      r: b.r * (1 - alpha) + o.r * alpha,
+      g: b.g * (1 - alpha) + o.g * alpha,
+      b: b.b * (1 - alpha) + o.b * alpha,
+    };
+  }
+
+  // Blooms are painted with the raw brand colours, which do not vary by theme.
+  const bloomColors = ['--color-violet-500', '--color-cyan-500', '--color-emerald-500'];
+  const textOnTop = [
+    '--color-text',
+    '--color-text-muted',
+    '--color-text-subtle',
+    '--color-accent',
+    '--color-secondary',
+    '--color-success',
+  ];
+
+  /**
+   * Every surface a bloom can sit on, not just the page background. Only
+   * modelling `--color-surface` is what let four real failures through: blooms
+   * also sit in sunken sections, which composite differently.
+   */
+  const baseSurfaces = ['--color-surface', '--color-surface-sunken'];
+
+  describe.each<Theme>(['dark', 'light'])('%s theme', (theme) => {
+    it.each(bloomColors)('a %s bloom at the ceiling keeps text above AA', (bloomToken) => {
+      for (const base of baseSurfaces) {
+        const blended = composite(
+          resolveToken(base, theme),
+          resolveToken(bloomToken, theme),
+          ceilingByTheme[theme],
+        );
+
+        for (const token of textOnTop) {
+          const ratio = wcagContrast(toColor(resolveToken(token, theme)), blended);
+          expect(
+            ratio,
+            `${token} over ${bloomToken} on ${base} in ${theme}`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    });
+  });
+
+  it('matches the ceiling actually declared in the stylesheet', () => {
+    for (const theme of ['dark', 'light'] as const) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const declared = Number(
+        getComputedStyle(document.documentElement).getPropertyValue('--bloom-opacity'),
+      );
+      expect(declared, `${theme} --bloom-opacity`).toBeLessThanOrEqual(ceilingByTheme[theme]);
+    }
+  });
+});

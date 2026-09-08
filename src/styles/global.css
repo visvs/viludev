@@ -223,6 +223,7 @@
   --focus: var(--color-cyan-400);
 
   --elevation: var(--shadow-md);
+  --bloom-opacity: 0.22;
   color-scheme: dark;
 }
 
@@ -231,23 +232,193 @@
   --surface-raised: oklch(1 0 0);
   --surface-sunken: var(--color-ink-100);
   --text: var(--color-ink-950);
-  --text-muted: var(--color-ink-700);
-  --text-subtle: var(--color-ink-600);
+  /* One step darker than the obvious choice, for the same reason the accents
+     are: decorative blooms tint a pale surface, and the muted tiers are the
+     first thing to fall under 4.5:1 when they do. */
+  --text-muted: var(--color-ink-800);
+  --text-subtle: var(--color-ink-700);
   --border: var(--color-ink-200);
   --border-strong: var(--color-ink-500);
 
-  --accent: var(--color-violet-600);
-  --accent-hover: var(--color-violet-700);
+  /* Deeper steps than the obvious ones: a bloom darkens a light surface
+     toward its own hue, so the accents need headroom above the 4.5:1 line or
+     any decorative layer pushes text under it. */
+  --accent: var(--color-violet-700);
+  --accent-hover: var(--color-violet-800);
   --accent-strong: var(--color-violet-500);
   --accent-contrast: var(--color-ink-50);
 
   --secondary: var(--color-cyan-800);
-  --success: var(--color-emerald-700);
-  --danger: var(--color-red-600);
-  --focus: var(--color-violet-600);
+  --success: var(--color-emerald-800);
+  --danger: var(--color-red-700);
+  --focus: var(--color-violet-700);
 
   --elevation: var(--shadow-sm);
+  --bloom-opacity: 0.13;
   color-scheme: light;
+}
+
+/* ===========================================================================
+ * MOTION LAYER — scroll-driven, zero JavaScript
+ *
+ * Everything here runs on native CSS scroll-driven animations, which the
+ * browser drives on the compositor rather than the main thread. No observer, no
+ * scroll listener, no library — so none of it can cost input responsiveness.
+ *
+ * Two rules make this safe rather than fragile:
+ *
+ *  1. Content is fully visible by default. The animated state only exists
+ *     inside `@supports (animation-timeline: view())`, so a browser without
+ *     support shows a clean static page instead of a blank one waiting for an
+ *     effect that will never run.
+ *  2. Everything is gated behind `prefers-reduced-motion: no-preference`.
+ *     Scroll-linked movement is a documented vestibular trigger, so it is
+ *     switched off entirely rather than merely shortened.
+ * ========================================================================= */
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(2.5rem);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes parallax-drift {
+  to {
+    transform: translateY(var(--drift, -6rem));
+  }
+}
+
+@keyframes hero-recede {
+  to {
+    opacity: 0;
+    transform: translateY(-3rem) scale(0.97);
+  }
+}
+
+@keyframes progress-advance {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes card-recede {
+  to {
+    opacity: 0.35;
+    transform: scale(0.93) translateY(-1rem);
+  }
+}
+
+@keyframes marquee-slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Each element carries its own view timeline, so a group of siblings
+       staggers naturally as each one crosses the threshold. No hand-tuned
+       delays, and it stays correct when scrolling upward. */
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+
+    .reveal-soft {
+      animation: reveal-fade linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+
+    /* Decorative layers drift at their own rate to build depth. */
+    .parallax {
+      animation: parallax-drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100vh;
+      will-change: transform;
+    }
+
+    .hero-recede {
+      animation: hero-recede linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 10vh 85vh;
+    }
+
+    .scroll-progress {
+      animation: progress-advance linear both;
+      animation-timeline: scroll(root block);
+      transform-origin: 0 50%;
+    }
+
+    /* Stacking cards: each recedes as the next slides over it. */
+    .stack-card > * {
+      animation: card-recede linear both;
+      animation-timeline: view();
+      animation-range: exit-crossing 0% exit-crossing 90%;
+    }
+  }
+}
+
+/* The marquee is time-based rather than scroll-linked: it should keep moving
+   while the reader is still, which a scroll timeline cannot do. */
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track {
+    animation: marquee-slide 42s linear infinite;
+  }
+
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * TEXTURE
+ * A dot grid, echoing the reference palette, to stop large dark areas reading
+ * as empty. Drawn with a gradient rather than an image: no request, no bytes.
+ * ------------------------------------------------------------------------- */
+@utility dot-grid {
+  background-image: radial-gradient(circle at center, var(--color-border) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+}
+
+/* A soft brand-coloured bloom. Purely decorative, always behind content.
+ *
+ * The opacity ceiling is a hard accessibility constraint, not a taste call. A
+ * bloom composites over the surface and lightens it, which *reduces* contrast
+ * for the light text sitting on top. At 0.5 the violet bloom dropped accent
+ * text to 3.55:1, below AA — and axe cannot catch it, because it reports
+ * overlapping decorative layers as "incomplete" rather than failing.
+ *
+ * The ceiling differs per theme, so it is a token rather than one number: a
+ * bloom lightens a dark surface and darkens a light one, and those directions
+ * do not have the same headroom. Light is far tighter — dark text loses
+ * contrast quickly as a pale surface picks up colour — which is why 0.13 there
+ * against 0.22 here.
+ *
+ * The ceiling is checked against every surface a bloom can sit on, not just the
+ * page background. An earlier version only modelled `--color-surface` and
+ * missed that blooms also sit over `--color-surface-sunken`, which composites
+ * darker; axe caught four real failures the test had waved through.
+ * `tests/browser/design-tokens.test.ts` now covers both.
+ */
+@utility bloom {
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: var(--bloom-opacity);
 }
 
 /* ===========================================================================

@@ -26,6 +26,11 @@ export const es: Record<TranslationKey, string> = {
     'Construyo interfaces que siguen siendo rápidas y usables en condiciones reales.',
   'hero.intro':
     'Cuatro años de trabajo frontend, la mayor parte en software de punto de venta que se usa todo el día por personas que no pueden detenerse a descifrar una pantalla. Ese contexto me enseñó más sobre rendimiento y claridad que cualquier proyecto personal.',
+  'hero.scrollCue': 'Desliza',
+  'about.statYears': 'Años',
+  'about.statCompanies': 'Empresas',
+  'about.statJs': 'JS enviado',
+  'experience.current': 'Actual',
   'hero.ctaContact': 'Hablemos',
   'hero.ctaGithub': 'GitHub',
 

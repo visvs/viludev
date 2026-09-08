@@ -1,0 +1,81 @@
+---
+import { formatDateRange } from '../lib/formatDateRange';
+import type { Locale } from '@/lib/i18n';
+
+interface Props {
+  role: string;
+  company: string;
+  startDate: string;
+  endDate: string | null;
+  highlights: readonly string[];
+  locale: Locale;
+  presentLabel: string;
+  currentLabel: string;
+  isCurrent: boolean;
+  index: number;
+}
+
+const {
+  role,
+  company,
+  startDate,
+  endDate,
+  highlights,
+  locale,
+  presentLabel,
+  currentLabel,
+  isCurrent,
+  index,
+} = Astro.props;
+
+const dateRange = formatDateRange(startDate, endDate, locale, presentLabel);
+/** Machine-readable range, so the dates are not only a visual convention. */
+const dateTime = endDate === null ? startDate : `${startDate}/${endDate}`;
+---
+
+{
+  /*
+  Sticky stacking: each card pins a little lower than the one before, so they
+  gather into a deck as you scroll instead of scrolling past. The receding
+  transform is applied to the inner element, because a `sticky` element cannot
+  also be the one being transformed without breaking the pin.
+*/
+}
+<li
+  class="stack-card sticky"
+  style={`top: calc(6rem + ${String(index)} * 1.75rem); z-index: ${String(index + 1)}`}
+>
+  <article class="border-border bg-surface-raised/85 rounded-xl border p-6 backdrop-blur-xl sm:p-8">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+      <time datetime={dateTime} class="text-text-subtle font-mono text-sm tracking-wide">
+        {dateRange}
+      </time>
+
+      {
+        isCurrent && (
+          <span class="text-success border-success/40 bg-success/10 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs tracking-wide uppercase">
+            <span class="bg-success size-1.5 rounded-full" aria-hidden="true" />
+            {currentLabel}
+          </span>
+        )
+      }
+    </div>
+
+    <h3 class="text-text mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{role}</h3>
+    <p class="text-accent mt-1 text-lg font-medium">{company}</p>
+
+    <ul class="mt-6 space-y-3">
+      {
+        highlights.map((highlight) => (
+          <li class="text-text-muted flex gap-3 leading-relaxed">
+            <span
+              class="text-secondary mt-[0.65em] size-1.5 shrink-0 rounded-full bg-current"
+              aria-hidden="true"
+            />
+            <span>{highlight}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</li>

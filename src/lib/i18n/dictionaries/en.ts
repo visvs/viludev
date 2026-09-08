@@ -25,6 +25,11 @@ export const en = {
   'hero.statement': 'I build interfaces that stay fast and usable under real conditions.',
   'hero.intro':
     'Four years of frontend work, most of it on point-of-sale software used all day by people who cannot stop to figure out a screen. That context taught me more about performance and clarity than any side project could.',
+  'hero.scrollCue': 'Scroll',
+  'about.statYears': 'Years',
+  'about.statCompanies': 'Companies',
+  'about.statJs': 'JS shipped',
+  'experience.current': 'Current',
   'hero.ctaContact': 'Get in touch',
   'hero.ctaGithub': 'GitHub',
 

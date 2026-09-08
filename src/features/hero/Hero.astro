@@ -1,6 +1,5 @@
 ---
 import Container from '@/components/layout/Container.astro';
-import Section from '@/components/layout/Section.astro';
 import Button from '@/components/ui/Button.astro';
 import { site } from '@/data/site';
 import { useTranslations, type Locale } from '@/lib/i18n';
@@ -13,25 +12,74 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 ---
 
-<Section id="hero" class="flex min-h-[min(90svh,52rem)] items-center">
-  <Container size="wide">
-    <p class="text-secondary font-mono text-sm tracking-wide uppercase">{t('hero.eyebrow')}</p>
+<section
+  id="hero"
+  aria-labelledby="hero-heading"
+  class="relative flex min-h-[min(100svh,60rem)] items-center overflow-hidden"
+>
+  {
+    /*
+    Decorative depth: a dot grid masked to fade out, and three brand-coloured
+    blooms drifting at different rates. All of it is aria-hidden and sits behind
+    the content, and none of it is an image request.
+  */
+  }
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="dot-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_50%_0%,black,transparent_75%)] opacity-60"
+    >
+    </div>
 
-    <h1 id="hero-heading" class="text-display mt-4 max-w-5xl leading-[0.95]">
-      {site.name}
-    </h1>
+    <div
+      class="bloom parallax bg-accent-strong -top-32 -left-24 size-[32rem]"
+      style="--drift: -4rem"
+    >
+    </div>
+    <div class="bloom parallax bg-secondary top-1/4 -right-32 size-[28rem]" style="--drift: -9rem">
+    </div>
+    <div class="bloom parallax bg-success bottom-0 left-1/3 size-[24rem]" style="--drift: -6rem">
+    </div>
+  </div>
 
-    <p class="text-text mt-8 max-w-3xl text-2xl leading-tight font-medium text-balance">
-      {t('hero.statement')}
-    </p>
+  <Container size="wide" class="relative">
+    <div class="hero-recede">
+      <p
+        class="text-secondary flex items-center gap-3 font-mono text-sm tracking-[0.2em] uppercase"
+      >
+        <span class="bg-secondary inline-block h-px w-10" aria-hidden="true"></span>
+        {t('hero.eyebrow')}
+      </p>
 
-    <p class="text-text-muted mt-6 max-w-2xl text-lg">{t('hero.intro')}</p>
+      <h1 id="hero-heading" class="text-display mt-6 max-w-5xl leading-[0.92] tracking-tighter">
+        {site.name}
+      </h1>
 
-    <div class="mt-10 flex flex-wrap items-center gap-4">
-      <Button href="#contact" size="lg">{t('hero.ctaContact')}</Button>
-      <Button href={site.social.github} intent="secondary" size="lg" rel="me noopener">
-        {t('hero.ctaGithub')}
-      </Button>
+      {
+        /*
+        The gradient is decorative, but it is still text — so every stop is a
+        token that already clears AA against the surface on its own.
+      */
+      }
+      <p class="mt-8 max-w-3xl text-2xl leading-tight font-semibold text-balance sm:text-3xl">
+        <span
+          class="from-accent via-secondary to-success bg-gradient-to-r bg-clip-text text-transparent"
+        >
+          {t('hero.statement')}
+        </span>
+      </p>
+
+      <p class="text-text-muted mt-8 max-w-2xl text-lg leading-relaxed">{t('hero.intro')}</p>
+
+      <div class="mt-12 flex flex-wrap items-center gap-4">
+        <Button href="#contact" size="lg">{t('hero.ctaContact')}</Button>
+        <Button href={site.social.github} intent="secondary" size="lg" rel="me noopener">
+          {t('hero.ctaGithub')}
+        </Button>
+      </div>
     </div>
   </Container>
-</Section>
+
+  <div class="text-text-subtle absolute inset-x-0 bottom-8 flex justify-center" aria-hidden="true">
+    <span class="font-mono text-xs tracking-[0.3em] uppercase">{t('hero.scrollCue')}</span>
+  </div>
+</section>

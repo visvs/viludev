@@ -10,6 +10,11 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+
+const profiles = [
+  { label: 'GitHub', href: site.social.github, handle: 'github.com/visvs' },
+  { label: 'LinkedIn', href: site.social.linkedin, handle: 'linkedin.com/in/visv' },
+] as const;
 ---
 
 {
@@ -18,51 +23,49 @@ const t = useTranslations(locale);
   here now so the navigation anchor is never a dead link.
 */
 }
-<Section id="contact" class="bg-surface-sunken">
-  <Container size="wide">
-    <h2 id="contact-heading" class="text-3xl">{t('contact.heading')}</h2>
-    <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('contact.lead')}</p>
+<Section id="contact" class="bg-surface-sunken relative overflow-hidden">
+  <div class="bloom bg-accent-strong -bottom-40 left-1/2 size-[36rem]" aria-hidden="true"></div>
 
-    <dl class="mt-10 grid gap-6 sm:grid-cols-3">
-      <div>
-        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">
-          {t('contact.emailLabel')}
-        </dt>
-        <dd class="mt-2">
-          <a
-            href={`mailto:${site.email}`}
-            class="text-accent hover:text-accent-hover duration-fast rounded-md break-all transition-colors"
-          >
-            {site.email}
-          </a>
-        </dd>
-      </div>
+  <Container size="wide" class="relative">
+    <div class="reveal">
+      <h2 id="contact-heading" class="text-4xl tracking-tighter sm:text-5xl">
+        {t('contact.heading')}
+      </h2>
+      <p class="text-text-muted mt-4 max-w-2xl text-lg">{t('contact.lead')}</p>
+    </div>
 
-      <div>
-        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">GitHub</dt>
-        <dd class="mt-2">
-          <a
-            href={site.social.github}
-            rel="me noopener"
-            class="text-accent hover:text-accent-hover duration-fast rounded-md transition-colors"
-          >
-            github.com/visvs
-          </a>
-        </dd>
-      </div>
+    <div class="reveal mt-12">
+      <a
+        href={`mailto:${site.email}`}
+        class="text-text hover:text-accent focus-visible:text-accent group duration-base inline-flex max-w-full items-center gap-4 rounded-md text-2xl font-semibold tracking-tight transition-colors sm:text-4xl"
+      >
+        <span class="break-all">{site.email}</span>
+        <span
+          class="text-accent duration-base ease-out-expo transition-transform group-hover:translate-x-1"
+          aria-hidden="true">&rarr;</span
+        >
+      </a>
+    </div>
 
-      <div>
-        <dt class="text-text-subtle font-mono text-sm tracking-wide uppercase">LinkedIn</dt>
-        <dd class="mt-2">
-          <a
-            href={site.social.linkedin}
-            rel="me noopener"
-            class="text-accent hover:text-accent-hover duration-fast rounded-md transition-colors"
-          >
-            linkedin.com/in/visv
-          </a>
-        </dd>
-      </div>
-    </dl>
+    <ul class="reveal border-border mt-16 grid gap-px overflow-hidden border-t sm:grid-cols-2">
+      {
+        profiles.map((profile) => (
+          <li>
+            <a
+              href={profile.href}
+              rel="me noopener"
+              class="hover:bg-surface-raised group duration-fast flex items-baseline justify-between gap-4 py-6 transition-colors sm:px-2"
+            >
+              <span class="text-text-subtle font-mono text-sm tracking-[0.15em] uppercase">
+                {profile.label}
+              </span>
+              <span class="text-text group-hover:text-accent duration-fast transition-colors">
+                {profile.handle}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </Container>
 </Section>
