@@ -1,7 +1,6 @@
 ---
 import Container from '@/components/layout/Container.astro';
 import Section from '@/components/layout/Section.astro';
-import ContactForm, { type ContactFormStrings } from './components/ContactForm';
 import { site } from '@/data/site';
 import { useTranslations, type Locale } from '@/lib/i18n';
 
@@ -20,37 +19,6 @@ interface Profile {
   handle: string;
   icon: ProfileIcon;
 }
-
-/**
- * The island receives finished strings rather than importing the dictionaries,
- * so only the sentences this form needs cross to the client — not both
- * languages of the entire site.
- */
-const formStrings: ContactFormStrings = {
-  heading: t('contact.formHeading'),
-  name: t('contact.nameLabel'),
-  email: t('contact.emailLabel2'),
-  message: t('contact.messageLabel'),
-  submit: t('contact.submit'),
-  submitting: t('contact.submitting'),
-  successTitle: t('contact.successTitle'),
-  successBody: t('contact.successBody'),
-  sendAnother: t('contact.sendAnother'),
-  errorTitle: t('contact.errorTitle'),
-  errorBody: t('contact.errorBody'),
-  rateLimited: t('contact.rateLimited'),
-  errorSummary: t('contact.errorSummary'),
-  honeypot: t('contact.optionalHint'),
-  required: t('contact.required'),
-  validation: {
-    nameTooShort: t('validation.nameTooShort'),
-    nameTooLong: t('validation.nameTooLong'),
-    emailInvalid: t('validation.emailInvalid'),
-    emailTooLong: t('validation.emailTooLong'),
-    messageTooShort: t('validation.messageTooShort'),
-    messageTooLong: t('validation.messageTooLong'),
-  },
-};
 
 const profiles: readonly Profile[] = [
   { label: 'GitHub', href: site.social.github, handle: 'github.com/visvs', icon: 'github' },
@@ -93,31 +61,6 @@ const iconPaths: Record<ProfileIcon, string> = {
           aria-hidden="true">&rarr;</span
         >
       </a>
-    </div>
-
-    {
-      /*
-      Cards rather than rows. The previous version read as a data table: no icon,
-      no arrow, nothing to say these were links, with the label and handle pushed
-      to opposite edges so the eye had to travel across dead space to connect
-      them. These match the card language used by the education and experience
-      sections, and the hover moves as well as recolours, which is what makes an
-      element feel interactive rather than merely highlighted.
-    */
-    }
-    <div class="reveal border-border mt-16 border-t pt-12">
-      <h3 class="text-text text-xl font-semibold tracking-tight">{t('contact.formHeading')}</h3>
-
-      <div class="mt-8 max-w-2xl">
-        {
-          /*
-          `client:visible`, not `client:load`: the form sits well below the fold,
-          so there is no reason to spend hydration before anyone scrolls near it.
-          It is the only island on the site.
-        */
-        }
-        <ContactForm client:visible strings={formStrings} />
-      </div>
     </div>
 
     <ul class="reveal mt-16 grid gap-4 sm:grid-cols-2">
