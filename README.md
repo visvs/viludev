@@ -4,8 +4,8 @@ Personal portfolio for **Violeta Vera Salazar**, Frontend Developer.
 
 Astro · TypeScript · Tailwind CSS · React · Vitest
 
-The site is bilingual, ships **2.5 KB of JavaScript** on the critical path, and
-has **zero axe violations** across both languages and both themes.
+The site is bilingual, ships **519 bytes of JavaScript** with no external script
+files, and has **zero axe violations** across both languages and both themes.
 
 ## Running it
 
@@ -43,15 +43,26 @@ config-like lists. The dividing question: would you edit it like a document?
 
 ## Decisions worth explaining
 
-**Exactly one React island.** The contact form is the only component with state
-HTML and CSS cannot express — a real state machine, focus management, live-region
-announcements. The theme toggle flips one attribute; the mobile menu uses the
-native Popover API, which already handles light-dismiss, Escape and focus. A
-portfolio built by a React developer that ships almost no React is a deliberate
-statement about knowing when not to reach for it.
+**No framework JavaScript ships today.** The page is built from Astro
+components and CSS: the theme toggle flips one attribute, the mobile menu uses
+the native Popover API — which already handles light-dismiss, Escape and focus —
+and the scroll work is entirely declarative. The whole site loads with **519
+bytes** of inline JavaScript and no external script files.
 
-_Cost:_ React's runtime is 57 KB gzipped. It is deferred behind `client:visible`,
-so it is never in the critical path, but it is the honest price of the choice.
+A React contact form island lives in `src/features/contact/components/`, fully
+built and covered by fourteen browser tests: a state machine across idle,
+submitting, success, error and rate-limited, with focus moved to the first
+invalid field and results announced through a live region. It is not currently
+mounted, so none of it reaches the browser. It is kept rather than deleted
+because the work is done and the decision to show a form is a content decision,
+not an engineering one.
+
+_What it would cost to switch back on:_ React's runtime is 57 KB gzipped,
+deferred behind `client:visible` so it never enters the critical path. The
+`/api/contact` endpoint that backs it — server-side validation, honeypot, rate
+limiting applied after validation so a typo cannot lock someone out — is the only
+route on the site that is not prerendered, and the only reason an adapter is
+present at all.
 
 **The scroll choreography is CSS, not JavaScript.** Twenty-one scroll-driven
 animations run on native `ScrollTimeline` and `ViewTimeline`, on the compositor,
