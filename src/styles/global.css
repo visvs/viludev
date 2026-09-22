@@ -336,46 +336,75 @@
   }
 }
 
+/* Every scroll-linked rule below is written in LONGHAND — `animation-name`,
+ * `animation-timing-function`, `animation-fill-mode` — and never with the
+ * `animation` shorthand. This is a build constraint, not a style preference.
+ *
+ * Lightning CSS, which minifies the production build through Tailwind, merges a
+ * neighbouring `animation-timeline` back into the shorthand it thinks it came
+ * from, emitting `animation: linear both reveal-rise view()`. No browser accepts
+ * a timeline inside that shorthand — it was dropped from it before shipping — so
+ * the whole declaration is invalid and `animation-name` computes to `none`.
+ * Every scroll animation then silently does nothing in production while still
+ * working in `astro dev`, which does not minify. Reordering does not help: with
+ * the timeline declared first, the shorthand resets it and the minifier drops
+ * the timeline outright. Longhands are left alone, so they are the fix.
+ *
+ * `pnpm audit:a11y` now reads back the computed `animation-name` of every
+ * animated element in the built site, because this is exactly the class of bug
+ * that reads fine in review and only appears once deployed. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     /* Each element carries its own view timeline, so a group of siblings
        staggers naturally as each one crosses the threshold. No hand-tuned
        delays, and it stays correct when scrolling upward. */
     .reveal {
-      animation: reveal-rise linear both;
+      animation-name: reveal-rise;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 0% entry 45%;
     }
 
     .reveal-soft {
-      animation: reveal-fade linear both;
+      animation-name: reveal-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
     }
 
     /* Decorative layers drift at their own rate to build depth. */
     .parallax {
-      animation: parallax-drift linear both;
+      animation-name: parallax-drift;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: scroll(root block);
       animation-range: 0 100vh;
       will-change: transform;
     }
 
     .hero-recede {
-      animation: hero-recede linear both;
+      animation-name: hero-recede;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: scroll(root block);
       animation-range: 10vh 85vh;
     }
 
     .scroll-progress {
-      animation: progress-advance linear both;
+      animation-name: progress-advance;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: scroll(root block);
       transform-origin: 0 50%;
     }
 
     /* Stacking cards: each recedes as the next slides over it. */
     .stack-card > * {
-      animation: card-recede linear both;
+      animation-name: card-recede;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: exit-crossing 0% exit-crossing 90%;
     }

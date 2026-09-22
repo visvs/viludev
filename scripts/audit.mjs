@@ -36,6 +36,76 @@ const THEMES = ['dark', 'light'];
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 
+/**
+ * Every animation that must actually be running in the shipped build, with the
+ * keyframes it has to resolve to.
+ *
+ * This exists because the motion layer can break in the minifier alone. Lightning
+ * CSS merges an `animation-timeline` back into a neighbouring `animation`
+ * shorthand, producing a declaration no browser accepts; `animation-name` then
+ * computes to `none` and every scroll effect is silently dead in production while
+ * `astro dev`, which does not minify, still looks correct. Source review cannot
+ * catch that, so it is asserted against the built artefact in a real browser.
+ *
+ * `scrollDriven` entries must also carry a timeline — a rule that animates on the
+ * document timeline instead would run once on load rather than tracking scroll.
+ */
+const ANIMATIONS = [
+  { selector: '.reveal', name: 'reveal-rise', scrollDriven: true },
+  { selector: '.parallax', name: 'parallax-drift', scrollDriven: true },
+  { selector: '.hero-recede', name: 'hero-recede', scrollDriven: true },
+  { selector: '.scroll-progress', name: 'progress-advance', scrollDriven: true },
+  { selector: '.stack-card > *', name: 'card-recede', scrollDriven: true },
+  { selector: '.avatar-float', name: 'avatar-float', scrollDriven: false },
+  { selector: '.marquee-track', name: 'marquee-slide', scrollDriven: false },
+];
+
+/**
+ * Read back what the browser actually computed for each animated element.
+ *
+ * A selector matching nothing is a failure too: it means the class was renamed
+ * or the element removed, and a guard that quietly checks zero elements is worse
+ * than no guard at all.
+ */
+async function checkMotion(page) {
+  const results = await page.evaluate((rules) => {
+    return rules.map((rule) => {
+      const element = document.querySelector(rule.selector);
+      if (element === null) return { ...rule, missing: true };
+
+      const computed = getComputedStyle(element);
+      return {
+        ...rule,
+        missing: false,
+        computedName: computed.animationName,
+        computedTimeline: computed.animationTimeline,
+      };
+    });
+  }, ANIMATIONS);
+
+  const failures = [];
+  for (const result of results) {
+    if (result.missing) {
+      failures.push(`no element matches ${result.selector}`);
+      continue;
+    }
+    if (result.computedName !== result.name) {
+      failures.push(
+        `${result.selector} computes animation-name "${result.computedName}", expected ` +
+          `"${result.name}" — the declaration was rejected by the browser`,
+      );
+      continue;
+    }
+    if (result.scrollDriven && result.computedTimeline === 'auto') {
+      failures.push(
+        `${result.selector} has no scroll timeline: animation-timeline computes to "auto"`,
+      );
+    }
+  }
+
+  return failures;
+}
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -123,6 +193,20 @@ async function main() {
       if (!withinBudget) {
         failures.push(`${route.path}: critical JS ${jsBytes} B exceeds ${JS_BUDGET_BYTES} B`);
       }
+
+      // Motion is theme-independent, so it is checked once per route rather
+      // than inside the theme loop.
+      const motionPage = await browser.newPage();
+      await motionPage.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'load' });
+      const motionFailures = await checkMotion(motionPage);
+      await motionPage.close();
+
+      console.log(
+        `  ${motionFailures.length === 0 ? 'PASS' : 'FAIL'}  ${route.path} motion: ` +
+          `${String(ANIMATIONS.length - motionFailures.length)}/${String(ANIMATIONS.length)} ` +
+          `animations running`,
+      );
+      failures.push(...motionFailures.map((failure) => `${route.path} motion: ${failure}`));
 
       for (const theme of THEMES) {
         const page = await browser.newPage();
